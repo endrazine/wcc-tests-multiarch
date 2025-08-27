@@ -2,7 +2,7 @@
 #
 # Cross-architecture build for WCC
 # Jonathan Brossard // endrazine@gmail.com
-# Mon Apr 28 11:07:40 CEST 2025
+# Wed Aug 27 08:14:30 CEST 2025
 #
 
 all::
@@ -13,7 +13,26 @@ all::
 	docker build --platform=linux/ppc64le . -t wcc-ppc64le:latest --no-cache|| :
 	docker build --platform=linux/386 . -t wcc-386:latest --no-cache|| :
 	docker build --platform=linux/amd64 . -t wcc-amd64:latest --no-cache|| :
-	cd riscv64 && make
+	cd unofficial && make
+
+static::
+	mkdir -p /tmp/static
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/aarch64 wcc-aarch64:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/arm/v7 wcc-arm:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/s390x wcc-s390x:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/mips64le wcc-mips64le:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/ppc64le wcc-ppc64le:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/386 wcc-386:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/amd64 wcc-amd64:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/alpha wcc-alpha:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/hppa wcc-hppa:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/loong64 wcc-loong64:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/m68k wcc-m68k:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/ppc wcc-ppc:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/ppc64 wcc-ppc64:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/riscv64 wcc-riscv64:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/sh4 wcc-sh4:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/static:/tmp/static -it --platform=linux/sparc64 wcc-sparc64:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
 
 run-aarch64::
 	docker run --platform=linux/arm64/v8 -it wcc-aarch64:latest /bin/bash

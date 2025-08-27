@@ -11,7 +11,7 @@ RUN apt-get update
 RUN apt-get install -y libbfd-dev uthash-dev libelf-dev libcapstone-dev  libreadline-dev libiberty-dev libgsl-dev build-essential git debootstrap file nano xxd
 
 # Build wcc & install it
-RUN git clone https://github.com/endrazine/wcc.git && cd wcc && git submodule init && git submodule update && make -i && make install
+RUN git clone https://github.com/endrazine/wcc.git && cd wcc && git checkout v0.0.11 && git submodule init && git submodule update && make -i && make install
 
 # Build openssl 
 #RUN git clone https://github.com/openssl/openssl.git || echo ok
