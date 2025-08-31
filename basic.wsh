@@ -1,0 +1,3 @@
+loadbin("libc.so.6")
+printf("%s\n", "Loaded libc in WSH ! Calling cross-architecture C functions from Lua through JIT binary translation");
+exit(0)

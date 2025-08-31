@@ -1,0 +1,3 @@
+a = ap_get_server_banner()
+print(a)
+exit(0)
