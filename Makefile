@@ -10,7 +10,7 @@ all::
 	docker build --platform=linux/arm/v7 . -t wcc-arm:latest --no-cache|| :
 	docker build --platform=linux/s390x . -t wcc-s390x:latest --no-cache|| :
 	docker build --platform=linux/ppc64le . -t wcc-ppc64le:latest --no-cache|| :
-	docker build --platform=linux/386 . -t wcc-386:latest --no-cache|| :
+	docker build --platform=linux/386 . -f Dockerfile-i386 -t wcc-386:latest --no-cache|| :
 	docker build --platform=linux/amd64 . -t wcc-amd64:latest --no-cache|| :
 	cd unofficial && make
 
@@ -201,7 +201,7 @@ testwsh:
 	docker run --platform=linux/s390x -it wcc-s390x:latest sh -c "which wsh && wsh --version"|| :
 	docker run --platform=linux/mips64le -it wcc-mips64le:latest sh -c "which wsh && wsh --version"|| :
 	docker run --platform=linux/ppc64le -it wcc-ppc64le:latest sh -c "which wsh && wsh --version"|| :
-#	docker run --platform=linux/386 -it wcc-386:latest sh -c "which wsh && wsh --version"|| :
+	docker run --platform=linux/386 -it wcc-386:latest sh -c "which wsh && wsh --version"|| :
 	docker run --platform=linux/amd64 -it wcc-amd64:latest sh -c "which wsh && wsh --version"|| :
 	docker run --platform=linux/riscv64 -it wcc-riscv64:latest sh -c "which wsh && wsh --version"|| :
 	docker run --platform=linux/sparc64 -it wcc-sparc64:latest sh -c "which wsh && wsh --version"|| :
@@ -219,7 +219,7 @@ testwld:
 	docker run --platform=linux/s390x -it wcc-s390x:latest sh -c "which wsh && wld"|| :
 	docker run --platform=linux/mips64le -it wcc-mips64le:latest sh -c "which wsh && wld"|| :
 	docker run --platform=linux/ppc64le -it wcc-ppc64le:latest sh -c "which wsh && wld"|| :
-#	docker run --platform=linux/386 -it wcc-386:latest sh -c "which wsh && wld"|| :
+	docker run --platform=linux/386 -it wcc-386:latest sh -c "which wsh && wld"|| :
 	docker run --platform=linux/amd64 -it wcc-amd64:latest sh -c "which wsh && wld"|| :
 	docker run --platform=linux/riscv64 -it wcc-riscv64:latest sh -c "which wsh && wld"|| :
 	docker run --platform=linux/sparc64 -it wcc-sparc64:latest sh -c "which wsh && wld"|| :
