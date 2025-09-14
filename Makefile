@@ -132,7 +132,7 @@ export-lightweight::
 	docker run -v /tmp/wsh:/tmp/static -it --platform=linux/riscv64 wcc-riscv64:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
 
 	# Export sh4
-	docker run -v /tmp/wsh:/tmp/static -it --platform=linux/sh4 wcc-sh4:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
+	docker run -v /tmp/wsh:/tmp/static -it --platform=linux/sh4 wcc-sh4:latest bash -c "cp /root/wcc/src/wsh/wsh /tmp/static/wsh-sh4"|| :
 	mkdir -p /tmp/wsh/sh4/
 	docker run -v /tmp/wsh:/tmp/static -it --platform=linux/sh4 wcc-sh4:latest bash -c "cp /lib/ld-linux.so.2 /tmp/static/sh4/"|| :
 	docker run -v /tmp/wsh:/tmp/static -it --platform=linux/sh4 wcc-sh4:latest bash -c "cp /lib/sh4-linux-gnu/libc.so.6 /tmp/static/sh4/"|| :
@@ -144,6 +144,7 @@ export-lightweight::
 	docker run -v /tmp/wsh:/tmp/static -it --platform=linux/sh4 wcc-sh4:latest bash -c "cp /lib/sh4-linux-gnu/libexpat.so.1 /tmp/static/sh4/"|| :
 	docker run -v /tmp/wsh:/tmp/static -it --platform=linux/sh4 wcc-sh4:latest bash -c "cp /lib/sh4-linux-gnu/libcrypt.so.1 /tmp/static/sh4/"|| :
 	docker run -v /tmp/wsh:/tmp/static -it --platform=linux/sh4 wcc-sh4:latest bash -c "cp /lib/sh4-linux-gnu/libuuid.so.1 /tmp/static/sh4/"|| :
+	docker run -v /tmp/wsh:/tmp/static -it --platform=linux/sh4 wcc-sh4:latest bash -c "cp /lib/sh4-linux-gnu/libm* /tmp/static/sh4/"|| :
 
 	# Export sparc64
 	docker run -v /tmp/wsh:/tmp/static -it --platform=linux/sparc64 wcc-sparc64:latest bash -c "cp /root/wcc/src/wsh/wsh-* /tmp/static/"|| :
@@ -171,8 +172,6 @@ testlightweight-apache::
 	LD_LIBRARY_PATH=/tmp/wsh/m68k:$LD_LIBRARY_PATH /tmp/wsh/m68k/ld.so.1 /tmp/wsh/wsh-m68k -q /tmp/wsh/m68k/apache2 < apache-banner.wsh || :
 	LD_LIBRARY_PATH=/tmp/wsh/sh4:$LD_LIBRARY_PATH /tmp/wsh/sh4/ld-linux.so.2 /tmp/wsh/wsh-sh4 -q /tmp/wsh/sh4/apache2 < apache-banner.wsh || :
 
-
-
 #	LD_LIBRARY_PATH=/tmp/wsh/aarch64:$LD_LIBRARY_PATH /tmp/wsh/aarch64/ld-linux-aarch64.so.1 /tmp/wsh/wsh-aarch64 /tmp/wsh/aarch64/apache2 < apache-banner.wsh
 #	LD_LIBRARY_PATH=/tmp/wsh/s390x:$LD_LIBRARY_PATH /tmp/wsh/s390x/ld64.so.1 /tmp/wsh/wsh-s390x /tmp/wsh/s390x/apache2 < apache-banner.wsh
 
@@ -193,7 +192,7 @@ testrelinking:
 	docker run --platform=linux/m68k -it wcc-m68k:latest sh -c "cd /root/apache_relink/ && ./ap2loglevel info"|| :
 	docker run --platform=linux/ppc -it wcc-ppc:latest sh -c "cd /root/apache_relink/ && ./ap2loglevel info"|| :
 	docker run --platform=linux/ppc64 -it wcc-ppc64:latest sh -c "cd /root/apache_relink/ && ./ap2loglevel info"|| :
-#	docker run --platform=linux/sh4 -it wcc-sh4:latest sh -c "cd /root/apache_relink/ && ./ap2loglevel info"|| :
+	docker run --platform=linux/sh4 -it wcc-sh4:latest sh -c "cd /root/apache_relink/ && ./ap2loglevel info"|| :
 
 testwsh:
 	docker run --platform=linux/arm64/v8 -it wcc-aarch64:latest sh -c "which wsh && wsh --version"|| :

@@ -1,0 +1,14 @@
+CC	:=	gcc
+CFLAGS	:=	-W -Wall
+LDFLAGS	:=	-lc ./apache2.so -Wl,-rpath=`pwd`
+
+all::
+	cp /usr/sbin/apache2 ./apache2.so
+	wld -l ./apache2.so
+	$(CC)  $(CFLAGS) ap2loglevel.c -o ap2loglevel $(LDFLAGS)
+
+test::
+	./ap2loglevel info
+
+clean::
+	rm ap2loglevel apache2.so -f

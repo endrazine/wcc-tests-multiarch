@@ -1,0 +1,108 @@
+diff --git a/src/wsh/Makefile b/src/wsh/Makefile
+index 8a64662..4f5c002 100644
+--- a/src/wsh/Makefile
++++ b/src/wsh/Makefile
+@@ -7,48 +7,37 @@
+ # This file is licensed under MIT License.
+ #
+ 
+-OBJLIB := ./lua/src/liblua.a ./openlibm/libopenlibm.a
++CC	:= gcc
+ 
+-CFLAGS := -rdynamic -W -Wall -Wextra -O0 -ggdb -g3 -Wno-unused-but-set-variable -Wno-unused-parameter -I./include -rdynamic -I../../include/ -I./luajit-2.0/src/ -Wl,-E -Wl,-z,now
+-#OBJLIB := ./luajit-2.0/src/libluajit.a ./openlibm/libopenlibm.a 
++CFLAGS := -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-unused-but-set-variable -Wno-unused-parameter -W -Wall -Wextra -O0 -ggdb -g3 -Wno-unused-but-set-variable -Wno-unused-parameter -I./include/sflib/ -I./include -I../../include/ -rdynamic -Wl,-E -Wl,-z,now #--sanitize=address
+ 
+-unamem := $(shell uname -m)
+-
+-ifeq ($(unamem), x86_64)
+-CFLAGS += -masm=intel
+-endif
+-
+-ifeq ($(unamem), x86_64)
+-WLINK	= -Wl,-T -Wl,script.lds
+-else
+-WLINK	=
+-endif
+ 
+ all::
+-	cd openlibm && make CFLAGS="-fpie -fPIC"
+-	cd lua && make linux CFLAGS="-fpie -fPIC"
+-	$(CC) $(CFLAGS) wsh.c -o wsh.o -c -fpie -fPIC -ldl -lreadline
+-	$(CC) $(CFLAGS) wshmain.c -o wshmain.o -c -fpie -fPIC -ldl -lreadline
+-	$(CC) $(CFLAGS) helper.c -o helper.o -c -fpie -fPIC
+-	$(CC) $(CFLAGS) linenoise/linenoise.c -o linenoise.o -c -fpie -fPIC
++	cd openlibm && make CFLAGS="-pie -fpie -fPIC "
++	cd lua && make linux CC="$(CC)"
++	$(CC) $(CFLAGS) wsh.c -o wsh.o -c -ldl -lreadline -pie -fpie -fPIC
++	$(CC) $(CFLAGS) wshmain.c -o wshmain.o -c -ldl -lreadline -pie -fpie -fPIC
++	$(CC) $(CFLAGS) helper.c -o helper.o -c -pie -fpie -fPIC
++	$(CC) $(CFLAGS) linenoise/linenoise.c -o linenoise.o -c -pie -fpie -fPIC
+ 	$(CC) $(CFLAGS) wsh.o helper.o linenoise.o -shared -fPIC -o libwitch.so
+ 	ar cr libwitch.a wsh.o helper.o linenoise.o
+ 	$(CC) $(CFLAGS) elfloader64.c -o elfloader64.o -c
+-	$(CC) $(CFLAGS) ../wld/wld.o elfloader64.o wsh.o helper.o linenoise.o wshmain.o -o wsh $(WLINK) -liberty $(OBJLIB) -ldl
+-	$(CC) $(CFLAGS) ../wld/wld.o elfloader64.o wsh.o helper.o linenoise.o wshmain.o -o wsh-static-`uname -m` $(WLINK) -liberty $(OBJLIB) -static
+-	$(CC) $(CFLAGS) ../wld/wld.o elfloader64.o wsh.o helper.o linenoise.o wshmain.o -o wsh-`uname -m` $(WLINK) -liberty $(OBJLIB) -ldl -Wl,-rpath=/tmp/wsh/`uname -m`/,-rpath=/tmp/wsh/,-rpath=.
+-	cp wsh libwsh.so
+-	../wld/wld -l libwsh.so
++	$(CC) $(CFLAGS) elfloader64.o ../wld/wld.o wsh.o helper.o linenoise.o wshmain.o -o wsh ./lua/src/liblua.a  -lgsl -lgslcblas /lib/sh4-linux-gnu/libc.so -lm -ldl /lib/sh4-linux-gnu/libiberty.a
+ 	cp wsh ../../bin/
+ 
+-test:
+-	cd tests && make
++dep::
++	sudo apt-get install libreadline6:i386 libreadline6-dev:i386 --reinstall
+ 
+ clean::
+-	rm wsh elfloader64.o helper.o wsh.o wshmain.o libwitch.so libwitch.a linenoise.o learnwitch.log libwsh.so wsh-* -f
++	rm elfloader64.o wsh-i386 helper.o wsh.o wshmain.o libwitch.so libwitch.a linenoise.o -f
+ 	cd openlibm && make clean
+ 	cd lua && make clean
+-	cd tests && make clean
++
++requirements::
++	sudo apt-get install libreadline-dev:i386
++	sudo apt-get install libiberty-dev:i386
++	sudo apt-get install libgsl-dev:i386
++
+ 
+ deepclean:
+ 	cd openlibm && make clean
+@@ -58,14 +47,8 @@ deepclean:
+ install::
+ 	mkdir -p $(DESTDIR)/usr/share/wcc/
+ 	cp -r ./scripts $(DESTDIR)/usr/share/wcc/
+-	cp wsh $(DESTDIR)/usr/bin/wsh || :
+-	cp libwsh.so $(DESTDIR)/lib/x86_64-linux-gnu/  || :
++	#cp wsh $(DESTDIR)/usr/bin/wsh
++
+ uninstall::
+ 	rm -rf $(DESTDIR)/usr/share/wcc/
+-	rm -f $(DESTDIR)/usr/bin/wsh
+-	rm -f $(DESTDIR)/lib/x86_64-linux-gnu/libwsh.so
+-
+-binfmt:
+-	sudo update-binfmts --install wsh /usr/bin/wsh --extension wsh
+-
+-
++	rm -f $(DESTDIR)/usr/bin/wsh-i386
+diff --git a/src/wsh/openlibm b/src/wsh/openlibm
+--- a/src/wsh/openlibm
++++ b/src/wsh/openlibm
+@@ -1 +1 @@
+-Subproject commit 3cfad148058a1dda6346821c9ca6b4c10d726543
++Subproject commit 3cfad148058a1dda6346821c9ca6b4c10d726543-dirty
+diff --git a/src/wsh/wsh.c b/src/wsh/wsh.c
+index 843d737..3065a00 100644
+--- a/src/wsh/wsh.c
++++ b/src/wsh/wsh.c
+@@ -2303,7 +2303,7 @@ static int libcall(lua_State * L)
+ {
+ 	unsigned long int *arg[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+ 	unsigned int i = 0;
+-	void *(*f) () = 0;
++	void *(*f) (void *arg1, void *arg2, void *arg3, void *arg4, void *arg5, void *arg6, void *arg7, void *arg8) = 0;
+ 	void *ret = 0;
+ 	int callerrno = 0;
+ 	int argnum = 0;
